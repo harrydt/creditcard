@@ -23,7 +23,7 @@ class Processor:
                         name=command[1],
                         amount=command[2]
                         )
-        #return sorted(summary)
+        return self._produce_summary()
 
     def _add(self, name, card_number, limit):
         '''
@@ -52,24 +52,31 @@ class Processor:
 
     def _charge(self, name, amount):
         '''This method is used for applying a charge to existing account'''
+        if name not in self.accounts:
+            # User doesn't exist
+            return
+
         int_amount = int(amount[1:])
-        if self._get_balance(name) < int_amount:
+        if self._get_limit(name) < int_amount:
             # Ignore overcharge
             return
-        else:
-            # Start charging cards
-            leftover = int_amount
+        
+        # Start charging cards
+        leftover = int_amount
 
-            for i in range(0, len(self.accounts[name])):
-                if leftover <= 0:
-                    break
-                if self.accounts[name][i]['balance'] < leftover:
-                    self.accounts[name][i]['balance'] = 0
-                    leftover = leftover - self.accounts[name][i]['balance']
-                else:
-                    self.accounts[name][i]['balance'] = 
-                        self.accounts[name][i]['balance'] - leftover
-                    leftover = 0
+        for i in range(0, len(self.accounts[name])):
+            if leftover <= 0:
+                break
+            capacity = self.accounts[name][i]['limit'] \
+                    - self.accounts['name'][i]['balance']
+            if capacity < leftover:
+                self.accounts[name][i]['balance'] = \
+                        self.account['name'][i]['limit']
+                leftover = leftover - self.accounts[name][i]['limit']
+            else:
+                self.accounts[name][i]['balance'] = \ 
+                    self.accounts[name][i]['balance'] + leftover
+                leftover = 0
 
     def _credit(self, name, amount): 
         pass
@@ -81,10 +88,25 @@ class Processor:
                 return False
         return True
 
-    def _get_balance(self, name):
-        '''Get total current balance from all cards of a user'''
-        balance = 0
+    def _get_capacity(self, name):
+        '''Get total leftover capacity from all cards of a user'''
+        capacity = 0
         for card in self.accounts[name]:
-            balance = balance + card['balance'] 
+            capacity = capacity + (card['limit'] - card['balance'])
 
-        return balance
+        return capacity
+
+    def _produce_summary(self):
+        summary_str = ""
+        sorted_summary = sorted(self.summary)
+
+        for name in sorted_summary:
+            if sorted_summary[name] == "error":
+                balance = "error"
+            else:
+                balance = sum([balance for card['balance'] in self.accounts[name]])
+                balance = "${:d}".format(balance)
+
+            summary_str += "%s: %s".format(name, balance)
+
+        return summary_str

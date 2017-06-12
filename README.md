@@ -40,7 +40,6 @@ sense that it would keep a database of users, data of their cards
 (number, limit, balance) and reload every time.
 If you want to start a fresh run, simply delete the local shelve object
 ```
-cd src
 rm accounts
 ```
 
@@ -56,13 +55,16 @@ To run code, you'll need to have Python installed. To install dedepencies, you c
 pip (https://packaging.python.org/install_requirements_linux/)
 ```
 pip install luhn
-```
-```
-cd src
+tar -xvzf braintree.tar.gz
 python3 main.py input_file.txt
 ```
 where input_file.txt is the file that contains the commands.
 
 # Test
-
+With shelve being a dict-like object, it was very straightforward to write tests
+```
+python3 processor_test.py
+```
+Test functional coverage is not 100%, but it's a showcase of how I usually write unit
+tests in Python.
 

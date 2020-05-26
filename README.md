@@ -67,4 +67,3 @@ python3 processor_test.py
 ```
 Test functional coverage is not 100%, but it's a showcase of how I usually write unit
 tests in Python.
-
